@@ -30,10 +30,15 @@ export const BoardProvider = ({ children }) => {
         const cards = await storage.getAllCards()
         dispatch({
           type: ACTION_TYPES.SET_INITIAL_STATE,
-          payload: { lists, cards },
+          payload: { lists: lists || [], cards: cards || [] },
         })
       } catch (error) {
         console.error('Failed to load data from storage:', error)
+        // Initialize with empty state if storage fails
+        dispatch({
+          type: ACTION_TYPES.SET_INITIAL_STATE,
+          payload: { lists: [], cards: [] },
+        })
       }
     }
     loadData()

@@ -7,17 +7,30 @@ async function enableMocking() {
     return
   }
 
-  const { worker } = await import('./mocks/browser')
-  return worker.start({
-    onUnhandledRequest: 'bypass',
-  })
+  try {
+    const { worker } = await import('./mocks/browser')
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+    })
+  } catch (error) {
+    console.warn('MSW initialization failed, continuing without mock server:', error)
+  }
 }
 
-enableMocking().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  )
-})
+enableMocking()
+  .then(() => {
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    )
+  })
+  .catch((error) => {
+    console.error('Failed to initialize app:', error)
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    )
+  })
 

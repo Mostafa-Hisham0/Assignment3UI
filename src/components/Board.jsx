@@ -265,6 +265,18 @@ const Board = () => {
     [addCard, cards]
   )
 
+  if (activeLists.length === 0) {
+    return (
+      <div className="kanban-board flex items-center justify-center min-h-[60vh]">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Welcome to Kanban Board</h2>
+          <p className="mb-4">Get started by creating your first list!</p>
+          <p className="text-sm opacity-75">Click "Add List" in the toolbar above</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="kanban-board">
       <DndContext
