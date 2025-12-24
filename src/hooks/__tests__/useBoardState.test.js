@@ -4,8 +4,11 @@ import { BoardProvider } from '../../context/BoardProvider'
 
 describe('useBoardState', () => {
   it('should throw error when used outside provider', () => {
-    const { result } = renderHook(() => useBoardState())
-    expect(result.error).toBeDefined()
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
+    expect(() => {
+      renderHook(() => useBoardState())
+    }).toThrow('useBoard must be used within BoardProvider')
+    consoleError.mockRestore()
   })
 
   it('should return board state when used inside provider', () => {

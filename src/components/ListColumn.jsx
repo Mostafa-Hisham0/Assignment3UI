@@ -16,6 +16,7 @@ const ListColumn = ({
   onCardMove,
   onListRename,
   onListDelete,
+  onListArchive,
   onAddCard,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
@@ -56,6 +57,10 @@ const ListColumn = ({
     onListDelete(list.id)
     setShowDeleteConfirm(false)
   }, [list.id, onListDelete])
+
+  const handleArchive = useCallback(() => {
+    onListArchive(list.id)
+  }, [list.id, onListArchive])
 
 
   const shouldVirtualize = sortedCards.length > 30
@@ -111,6 +116,14 @@ const ListColumn = ({
           </h2>
         )}
         <div className="flex gap-2">
+          <button
+            onClick={handleArchive}
+            className="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2"
+            aria-label={`Archive list ${list.title}`}
+            title="Archive list"
+          >
+            📦
+          </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
             className="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-2"

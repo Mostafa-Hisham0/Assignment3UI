@@ -179,9 +179,9 @@ export const boardReducer = (state, action) => {
         if (oldIndex !== -1) {
           return { ...c, order: oldIndex, lastModifiedAt: new Date().toISOString() }
         }
-        const newIndex = newListCards.findIndex((nc) => nc.id === c.id)
-        if (newIndex !== -1) {
-          return { ...c, order: newIndex, lastModifiedAt: new Date().toISOString() }
+        const newCardIndex = newListCards.findIndex((nc) => nc.id === c.id)
+        if (newCardIndex !== -1) {
+          return { ...c, order: newCardIndex, lastModifiedAt: new Date().toISOString() }
         }
         return c
       })

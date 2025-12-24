@@ -300,6 +300,7 @@ const Board = () => {
                   onCardMove={moveCard}
                   onListRename={handleListRename}
                   onListDelete={handleListDelete}
+                  onListArchive={handleListArchive}
                   onAddCard={handleAddCard}
                 />
               )

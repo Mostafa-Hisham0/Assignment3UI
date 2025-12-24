@@ -13,6 +13,7 @@ export default {
     '!src/setupTests.js',
     '!src/**/*.test.{js,jsx}',
     '!src/**/__tests__/**',
+    '!src/mocks/**',
   ],
   coverageThreshold: {
     global: {

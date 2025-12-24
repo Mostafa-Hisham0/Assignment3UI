@@ -46,6 +46,11 @@ describe('validators', () => {
       const result = validateTag('')
       expect(result.valid).toBe(false)
     })
+
+    it('should reject tag that is too long', () => {
+      const result = validateTag('a'.repeat(31))
+      expect(result.valid).toBe(false)
+    })
   })
 })
 

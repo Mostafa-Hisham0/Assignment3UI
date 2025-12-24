@@ -24,7 +24,7 @@ const InlineEditor = ({
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !multiline) {
       e.preventDefault()
-      handleSave()
+      onSave(editValue.trim())
     } else if (e.key === 'Enter' && e.shiftKey && multiline) {
       return
     } else if (e.key === 'Escape') {

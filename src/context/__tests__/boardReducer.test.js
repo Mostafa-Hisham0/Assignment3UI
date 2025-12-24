@@ -1,5 +1,10 @@
 import { boardReducer, ACTION_TYPES } from '../boardReducer'
-import { generateId } from '../../utils/helpers'
+import { v4 as uuidv4 } from 'uuid'
+
+// Mock uuid
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'test-id-123'),
+}))
 
 describe('boardReducer', () => {
   const initialState = {
@@ -32,11 +37,11 @@ describe('boardReducer', () => {
     const state = boardReducer(initialState, action)
     expect(state.lists).toHaveLength(1)
     expect(state.lists[0].title).toBe('New List')
-    expect(state.lists[0].id).toBeDefined()
+    expect(state.lists[0].id).toBe('test-id-123')
   })
 
   it('should update a list', () => {
-    const listId = generateId()
+    const listId = 'list-1'
     const stateWithList = {
       ...initialState,
       lists: [{ id: listId, title: 'Old Title', version: 1 }],
@@ -51,7 +56,7 @@ describe('boardReducer', () => {
   })
 
   it('should delete a list', () => {
-    const listId = generateId()
+    const listId = 'list-1'
     const stateWithList = {
       ...initialState,
       lists: [{ id: listId, title: 'List' }],
@@ -66,8 +71,22 @@ describe('boardReducer', () => {
     expect(state.cards).toHaveLength(0)
   })
 
+  it('should archive a list', () => {
+    const listId = 'list-1'
+    const stateWithList = {
+      ...initialState,
+      lists: [{ id: listId, title: 'List', archived: false }],
+    }
+    const action = {
+      type: ACTION_TYPES.ARCHIVE_LIST,
+      payload: { listId },
+    }
+    const state = boardReducer(stateWithList, action)
+    expect(state.lists[0].archived).toBe(true)
+  })
+
   it('should add a card', () => {
-    const listId = generateId()
+    const listId = 'list-1'
     const action = {
       type: ACTION_TYPES.ADD_CARD,
       payload: { listId, title: 'New Card' },
@@ -79,7 +98,7 @@ describe('boardReducer', () => {
   })
 
   it('should update a card', () => {
-    const cardId = generateId()
+    const cardId = 'card-1'
     const stateWithCard = {
       ...initialState,
       cards: [{ id: cardId, title: 'Old Title', version: 1 }],
@@ -94,7 +113,7 @@ describe('boardReducer', () => {
   })
 
   it('should delete a card', () => {
-    const cardId = generateId()
+    const cardId = 'card-1'
     const stateWithCard = {
       ...initialState,
       cards: [{ id: cardId, title: 'Card' }],
@@ -106,5 +125,64 @@ describe('boardReducer', () => {
     const state = boardReducer(stateWithCard, action)
     expect(state.cards).toHaveLength(0)
   })
-})
 
+  it('should handle undo', () => {
+    const stateWithHistory = {
+      ...initialState,
+      history: [{ lists: [], cards: [] }, { lists: [{ id: '1', title: 'List' }], cards: [] }],
+      historyIndex: 1,
+    }
+    const action = { type: ACTION_TYPES.UNDO }
+    const state = boardReducer(stateWithHistory, action)
+    expect(state.historyIndex).toBe(0)
+  })
+
+  it('should handle redo', () => {
+    const stateWithHistory = {
+      ...initialState,
+      history: [{ lists: [], cards: [] }, { lists: [{ id: '1', title: 'List' }], cards: [] }],
+      historyIndex: 0,
+    }
+    const action = { type: ACTION_TYPES.REDO }
+    const state = boardReducer(stateWithHistory, action)
+    expect(state.historyIndex).toBe(1)
+  })
+
+  it('should move a card', () => {
+    const cardId = 'card-1'
+    const listId1 = 'list-1'
+    const listId2 = 'list-2'
+    const stateWithCard = {
+      ...initialState,
+      lists: [
+        { id: listId1, title: 'List 1' },
+        { id: listId2, title: 'List 2' },
+      ],
+      cards: [{ id: cardId, listId: listId1, title: 'Card', order: 0 }],
+    }
+    const action = {
+      type: ACTION_TYPES.MOVE_CARD,
+      payload: { cardId, newListId: listId2, newIndex: 0 },
+    }
+    const state = boardReducer(stateWithCard, action)
+    expect(state.cards[0].listId).toBe(listId2)
+  })
+
+  it('should reorder cards', () => {
+    const listId = 'list-1'
+    const stateWithCards = {
+      ...initialState,
+      cards: [
+        { id: 'card-1', listId, order: 0 },
+        { id: 'card-2', listId, order: 1 },
+      ],
+    }
+    const action = {
+      type: ACTION_TYPES.REORDER_CARDS,
+      payload: { listId, cardIds: ['card-2', 'card-1'] },
+    }
+    const state = boardReducer(stateWithCards, action)
+    expect(state.cards.find((c) => c.id === 'card-2').order).toBe(0)
+    expect(state.cards.find((c) => c.id === 'card-1').order).toBe(1)
+  })
+})

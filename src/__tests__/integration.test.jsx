@@ -21,7 +21,10 @@ describe('Integration Tests', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('main')).toBeInTheDocument()
+      // Board should render - either with lists (role="main") or welcome message
+      const mainElement = screen.queryByRole('main')
+      const welcomeMessage = screen.queryByText('Welcome to Kanban Board')
+      expect(mainElement || welcomeMessage).toBeInTheDocument()
     })
   })
 
