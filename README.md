@@ -1,4 +1,4 @@
-# Kanban Board - React Assignment
+# Kanban Board 
 
 A fully-featured Kanban board application built with React, featuring offline support, conflict resolution, drag-and-drop, and comprehensive accessibility features.
 
@@ -151,8 +151,3 @@ src/
 - Safari (latest)
 
 Requires IndexedDB support for offline functionality.
-
-## License
-
-This project is created for educational purposes.
-
