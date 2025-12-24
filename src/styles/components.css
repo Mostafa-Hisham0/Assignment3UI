@@ -1,0 +1,94 @@
+/* Component-specific styles */
+.kanban-board {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.kanban-column {
+  min-width: 300px;
+  max-width: 300px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0 0.5rem;
+}
+
+.kanban-card {
+  background-color: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+.kanban-card.dragging {
+  opacity: 0.5;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  outline: none;
+}
+
+.confirm-dialog {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  outline: none;
+}
+
+.inline-editor {
+  width: 100%;
+  border: 2px solid #3b82f6;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.inline-editor:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
