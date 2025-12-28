@@ -178,3 +178,20 @@ export const saveAllData = async (lists, cards) => {
   })
 }
 
+export const clearAllData = async () => {
+  const database = await openDB()
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([STORE_LISTS, STORE_CARDS, STORE_SYNC_QUEUE], 'readwrite')
+    const listStore = transaction.objectStore(STORE_LISTS)
+    const cardStore = transaction.objectStore(STORE_CARDS)
+    const syncStore = transaction.objectStore(STORE_SYNC_QUEUE)
+
+    listStore.clear()
+    cardStore.clear()
+    syncStore.clear()
+
+    transaction.oncomplete = () => resolve()
+    transaction.onerror = () => reject(transaction.error)
+  })
+}
+

@@ -1,9 +1,11 @@
-import { createContext, useContext, useReducer, useEffect } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import { boardReducer, ACTION_TYPES } from './boardReducer'
 import * as storage from '../services/storage'
 
 const BoardContext = createContext(null)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBoard = () => {
   const context = useContext(BoardContext)
   if (!context) {
@@ -23,6 +25,9 @@ export const BoardProvider = ({ children }) => {
     conflicts: [],
   })
 
+  const isInitialLoad = useRef(true)
+  const isSavingRef = useRef(false)
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -32,6 +37,7 @@ export const BoardProvider = ({ children }) => {
           type: ACTION_TYPES.SET_INITIAL_STATE,
           payload: { lists: lists || [], cards: cards || [] },
         })
+        isInitialLoad.current = false
       } catch (error) {
         console.error('Failed to load data from storage:', error)
         // Initialize with empty state if storage fails
@@ -39,10 +45,32 @@ export const BoardProvider = ({ children }) => {
           type: ACTION_TYPES.SET_INITIAL_STATE,
           payload: { lists: [], cards: [] },
         })
+        isInitialLoad.current = false
       }
     }
     loadData()
   }, [])
+
+  // Save to storage whenever lists or cards change (but skip initial load)
+  useEffect(() => {
+    if (isInitialLoad.current || isSavingRef.current) {
+      return
+    }
+
+    const saveData = async () => {
+      isSavingRef.current = true
+      try {
+        // Use saveAllData which clears and saves everything atomically
+        await storage.saveAllData(state.lists, state.cards)
+      } catch (error) {
+        console.error('Failed to save to storage:', error)
+      } finally {
+        isSavingRef.current = false
+      }
+    }
+
+    saveData()
+  }, [state.lists, state.cards])
 
   const addList = (title) => {
     dispatch({ type: ACTION_TYPES.ADD_LIST, payload: { title } })
@@ -58,6 +86,10 @@ export const BoardProvider = ({ children }) => {
 
   const archiveList = (listId) => {
     dispatch({ type: ACTION_TYPES.ARCHIVE_LIST, payload: { listId } })
+  }
+
+  const unarchiveList = (listId) => {
+    dispatch({ type: ACTION_TYPES.UNARCHIVE_LIST, payload: { listId } })
   }
 
   const addCard = (listId, cardData) => {
@@ -91,6 +123,18 @@ export const BoardProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REDO })
   }
 
+  const clearAll = async () => {
+    isSavingRef.current = true
+    dispatch({ type: ACTION_TYPES.CLEAR_ALL })
+    try {
+      await storage.clearAllData()
+    } catch (error) {
+      console.error('Failed to clear storage:', error)
+    } finally {
+      isSavingRef.current = false
+    }
+  }
+
   const value = {
     ...state,
     dispatch,
@@ -98,6 +142,7 @@ export const BoardProvider = ({ children }) => {
     updateList,
     deleteList,
     archiveList,
+    unarchiveList,
     addCard,
     updateCard,
     deleteCard,
@@ -105,8 +150,13 @@ export const BoardProvider = ({ children }) => {
     reorderCards,
     undo,
     redo,
+    clearAll,
   }
 
   return <BoardContext.Provider value={value}>{children}</BoardContext.Provider>
+}
+
+BoardProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 }
 
