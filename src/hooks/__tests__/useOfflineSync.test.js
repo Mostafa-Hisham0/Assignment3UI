@@ -299,7 +299,7 @@ describe('useOfflineSync', () => {
       version: 3,
       lastModifiedAt: new Date().toISOString(),
     }
-    const localList = {
+    const _localList = {
       id: 'list-1',
       title: 'Local Title',
       version: 2,
@@ -324,7 +324,7 @@ describe('useOfflineSync', () => {
       version: 3,
       lastModifiedAt: new Date().toISOString(),
     }
-    const localCard = {
+    const _localCard = {
       id: 'card-1',
       title: 'Local Card',
       version: 2,
@@ -397,7 +397,7 @@ describe('useOfflineSync', () => {
 
   it('sets up periodic sync interval', async () => {
     jest.useFakeTimers()
-    const { result } = renderHook(() => useOfflineSync(), { wrapper })
+    renderHook(() => useOfflineSync(), { wrapper })
     
     await act(async () => {
       jest.advanceTimersByTime(30000)
@@ -415,7 +415,7 @@ describe('useOfflineSync', () => {
       configurable: true,
     })
     
-    const { result } = renderHook(() => useOfflineSync(), { wrapper })
+    renderHook(() => useOfflineSync(), { wrapper })
     
     await act(async () => {
       // Set offline after hook mounts
@@ -446,7 +446,7 @@ describe('useOfflineSync', () => {
       version: 1,
       lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
     }
-    const localList = {
+    const _localList = {
       id: 'list-1',
       title: 'Local Title',
       version: 2,
@@ -470,7 +470,7 @@ describe('useOfflineSync', () => {
       version: 1,
       lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
     }
-    const localCard = {
+    const _localCard = {
       id: 'card-1',
       title: 'Local Card',
       version: 2,
@@ -665,7 +665,7 @@ describe('useOfflineSync', () => {
   })
 
   it('handles lists without server match', async () => {
-    const localList = {
+    const _localList = {
       id: 'list-local-only',
       title: 'Local Only List',
       version: 1,
