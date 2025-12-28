@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import PropTypes from 'prop-types'
 import InlineEditor from './InlineEditor'
 import { validateCard, validateTag } from '../utils/validators'
 
@@ -10,6 +11,12 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
   const [errors, setErrors] = useState({})
   const modalRef = useRef(null)
   const titleInputRef = useRef(null)
+
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose()
+    }
+  }, [onClose])
 
   useEffect(() => {
     if (isOpen && card) {
@@ -43,13 +50,7 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
-
-  const handleClose = useCallback(() => {
-    if (onClose) {
-      onClose()
-    }
-  }, [onClose])
+  }, [isOpen, handleClose])
 
   const handleSave = useCallback(() => {
     const validation = validateCard({ title, description, tags })
@@ -118,13 +119,15 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="modal-overlay"
       onClick={handleBackdropClick}
+      onKeyDown={handleKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby="card-modal-title"
-      onKeyDown={handleKeyDown}
+      tabIndex={-1}
     >
       <div className="modal-content" ref={modalRef} role="document">
         <div className="mb-4">
@@ -135,7 +138,6 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
               onCancel={() => setTitle(card.title)}
               placeholder="Card title"
               className="w-full text-2xl font-bold"
-              autoFocus={false}
             />
           </h2>
         </div>
@@ -151,7 +153,6 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
             placeholder="Add a description..."
             className="w-full"
             multiline={true}
-            autoFocus={false}
           />
         </div>
 
@@ -237,6 +238,19 @@ const CardDetailModal = ({ card, isOpen, onClose, onSave, onDelete }) => {
       </div>
     </div>
   )
+}
+
+CardDetailModal.propTypes = {
+  card: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 }
 
 export default CardDetailModal

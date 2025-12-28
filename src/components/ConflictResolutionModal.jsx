@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 
 const ConflictResolutionModal = ({
   isOpen,
@@ -46,13 +47,25 @@ const ConflictResolutionModal = ({
     }
   }
 
+  const handleBackdropKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      if (e.target === e.currentTarget) {
+        onCancel()
+      }
+    }
+  }
+
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="modal-overlay"
       onClick={handleBackdropClick}
+      onKeyDown={handleBackdropKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby="conflict-modal-title"
+      tabIndex={-1}
     >
       <div className="modal-content" ref={modalRef} role="document">
         <h2 id="conflict-modal-title" className="text-2xl font-bold mb-4">
@@ -82,7 +95,7 @@ const ConflictResolutionModal = ({
         </div>
 
         <div className="mb-6">
-          <label className="block font-semibold mb-2">Choose which version to keep:</label>
+          <div className="block font-semibold mb-2">Choose which version to keep:</div>
           <div className="space-y-2">
             <label className="flex items-center">
               <input
@@ -137,6 +150,18 @@ const ConflictResolutionModal = ({
       </div>
     </div>
   )
+}
+
+ConflictResolutionModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  conflict: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    local: PropTypes.object.isRequired,
+    server: PropTypes.object.isRequired,
+  }).isRequired,
+  onResolve: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 }
 
 export default ConflictResolutionModal

@@ -1,8 +1,9 @@
 import { memo, useCallback } from 'react'
+import PropTypes from 'prop-types'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-const Card = memo(({ card, onEdit, onDelete, onClick }) => {
+const Card = memo(({ card, onEdit: _onEdit, onDelete, onClick }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
   })
@@ -76,6 +77,18 @@ const Card = memo(({ card, onEdit, onDelete, onClick }) => {
 })
 
 Card.displayName = 'Card'
+
+Card.propTypes = {
+  card: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
+}
 
 export default Card
 

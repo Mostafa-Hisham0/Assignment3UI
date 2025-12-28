@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 
 const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel' }) => {
   const dialogRef = useRef(null)
@@ -36,14 +37,26 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmTex
     }
   }
 
+  const handleBackdropKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      if (e.target === e.currentTarget) {
+        onCancel()
+      }
+    }
+  }
+
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="modal-overlay"
       onClick={handleBackdropClick}
+      onKeyDown={handleBackdropKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-message"
+      tabIndex={-1}
     >
       <div className="confirm-dialog" ref={dialogRef} role="document">
         <h2 id="confirm-dialog-title" className="text-xl font-bold mb-4">
@@ -72,6 +85,16 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmTex
       </div>
     </div>
   )
+}
+
+ConfirmDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
 }
 
 export default ConfirmDialog

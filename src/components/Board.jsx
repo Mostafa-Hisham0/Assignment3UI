@@ -18,13 +18,11 @@ import { useBoard } from '../context/BoardProvider'
 import ListColumn from './ListColumn'
 import Card from './Card'
 import CardDetailModal from './CardDetailModal'
-import * as storage from '../services/storage'
 
 const Board = () => {
   const {
     lists,
     cards,
-    addList,
     updateList,
     deleteList,
     archiveList,
@@ -57,7 +55,7 @@ const Board = () => {
   }, [cards])
 
   const handleDragEnd = useCallback(
-    async (event) => {
+    (event) => {
       const { active, over } = event
       setActiveCard(null)
 
@@ -80,17 +78,6 @@ const Board = () => {
 
         const newIndex = targetCards.length
         moveCard(cardId, overId, newIndex)
-
-        try {
-          await storage.saveCard({
-            ...card,
-            listId: overId,
-            order: newIndex,
-            lastModifiedAt: new Date().toISOString(),
-          })
-        } catch (error) {
-          console.error('Failed to save card:', error)
-        }
       } else if (isOverCard) {
         const overCard = cards.find((c) => c.id === overId)
         if (!overCard) return
@@ -110,20 +97,6 @@ const Board = () => {
             const reordered = arrayMove(listCards, oldIndex, newIndex)
             const cardIds = reordered.map((c) => c.id)
             reorderCards(sourceListId, cardIds)
-
-            try {
-              await Promise.all(
-                reordered.map((c, index) =>
-                  storage.saveCard({
-                    ...c,
-                    order: index,
-                    lastModifiedAt: new Date().toISOString(),
-                  })
-                )
-              )
-            } catch (error) {
-              console.error('Failed to save reordered cards:', error)
-            }
           }
         } else {
           const targetListCards = cards
@@ -132,17 +105,6 @@ const Board = () => {
 
           const newIndex = targetListCards.findIndex((c) => c.id === overId)
           moveCard(cardId, targetListId, newIndex)
-
-          try {
-            await storage.saveCard({
-              ...card,
-              listId: targetListId,
-              order: newIndex,
-              lastModifiedAt: new Date().toISOString(),
-            })
-          } catch (error) {
-            console.error('Failed to save card:', error)
-          }
         }
       }
     },
@@ -155,114 +117,51 @@ const Board = () => {
   }, [])
 
   const handleCardSave = useCallback(
-    async (updatedCard) => {
+    (updatedCard) => {
       updateCard(updatedCard.id, {
         title: updatedCard.title,
         description: updatedCard.description,
         tags: updatedCard.tags,
       })
-
-      try {
-        await storage.saveCard({
-          ...updatedCard,
-          lastModifiedAt: new Date().toISOString(),
-        })
-      } catch (error) {
-        console.error('Failed to save card:', error)
-      }
     },
     [updateCard]
   )
 
   const handleCardDelete = useCallback(
-    async (cardId) => {
+    (cardId) => {
       deleteCard(cardId)
       setIsModalOpen(false)
       setSelectedCard(null)
-
-      try {
-        await storage.deleteCard(cardId)
-      } catch (error) {
-        console.error('Failed to delete card:', error)
-      }
     },
     [deleteCard]
   )
 
   const handleListRename = useCallback(
-    async (listId, newTitle) => {
+    (listId, newTitle) => {
       updateList(listId, { title: newTitle })
-
-      try {
-        const list = lists.find((l) => l.id === listId)
-        if (list) {
-          await storage.saveList({
-            ...list,
-            title: newTitle,
-            lastModifiedAt: new Date().toISOString(),
-          })
-        }
-      } catch (error) {
-        console.error('Failed to save list:', error)
-      }
     },
-    [lists, updateList]
+    [updateList]
   )
 
   const handleListDelete = useCallback(
-    async (listId) => {
+    (listId) => {
       deleteList(listId)
-
-      try {
-        await storage.deleteList(listId)
-        const listCards = cards.filter((c) => c.listId === listId)
-        await Promise.all(listCards.map((c) => storage.deleteCard(c.id)))
-      } catch (error) {
-        console.error('Failed to delete list:', error)
-      }
     },
-    [cards, deleteList]
+    [deleteList]
   )
 
   const handleListArchive = useCallback(
-    async (listId) => {
+    (listId) => {
       archiveList(listId)
-
-      try {
-        const list = lists.find((l) => l.id === listId)
-        if (list) {
-          await storage.saveList({
-            ...list,
-            archived: true,
-            lastModifiedAt: new Date().toISOString(),
-          })
-        }
-      } catch (error) {
-        console.error('Failed to archive list:', error)
-      }
     },
-    [lists, archiveList]
+    [archiveList]
   )
 
   const handleAddCard = useCallback(
-    async (listId, cardData) => {
+    (listId, cardData) => {
       addCard(listId, cardData)
-
-      try {
-        const newCard = {
-          id: cardData.id || `card-${Date.now()}`,
-          listId,
-          ...cardData,
-          order: cards.filter((c) => c.listId === listId).length,
-          version: 1,
-          lastModifiedAt: new Date().toISOString(),
-        }
-        await storage.saveCard(newCard)
-      } catch (error) {
-        console.error('Failed to save card:', error)
-      }
     },
-    [addCard, cards]
+    [addCard]
   )
 
   if (activeLists.length === 0) {
@@ -271,7 +170,7 @@ const Board = () => {
         <div className="text-center text-white">
           <h2 className="text-2xl font-bold mb-4">Welcome to Kanban Board</h2>
           <p className="mb-4">Get started by creating your first list!</p>
-          <p className="text-sm opacity-75">Click "Add List" in the toolbar above</p>
+          <p className="text-sm opacity-75">Click &quot;Add List&quot; in the toolbar above</p>
         </div>
       </div>
     )

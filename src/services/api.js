@@ -1,5 +1,3 @@
-const API_BASE = '/api'
-
 let serverData = {
   lists: [],
   cards: [],

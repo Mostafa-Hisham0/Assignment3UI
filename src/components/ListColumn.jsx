@@ -1,11 +1,11 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState } from 'react'
+import PropTypes from 'prop-types'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { FixedSizeList } from 'react-window'
 import Card from './Card'
 import InlineEditor from './InlineEditor'
 import ConfirmDialog from './ConfirmDialog'
-import { useState } from 'react'
 
 const ListColumn = ({
   list,
@@ -13,7 +13,7 @@ const ListColumn = ({
   onCardClick,
   onCardEdit,
   onCardDelete,
-  onCardMove,
+  onCardMove: _onCardMove,
   onListRename,
   onListDelete,
   onListArchive,
@@ -99,21 +99,14 @@ const ListColumn = ({
             className="flex-1 font-bold text-lg"
           />
         ) : (
-          <h2
-            className="font-bold text-lg cursor-pointer flex-1"
+          <button
+            type="button"
+            className="font-bold text-lg cursor-pointer flex-1 text-left bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
             onClick={() => setIsEditingTitle(true)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                setIsEditingTitle(true)
-              }
-            }}
-            tabIndex={0}
-            role="button"
             aria-label={`Edit list title: ${list.title}`}
           >
             {list.title}
-          </h2>
+          </button>
         )}
         <div className="flex gap-2">
           <button
@@ -193,6 +186,28 @@ const ListColumn = ({
       />
     </div>
   )
+}
+
+ListColumn.propTypes = {
+  list: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    archived: PropTypes.bool,
+  }).isRequired,
+  cards: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  onCardClick: PropTypes.func.isRequired,
+  onCardEdit: PropTypes.func.isRequired,
+  onCardDelete: PropTypes.func.isRequired,
+  onCardMove: PropTypes.func,
+  onListRename: PropTypes.func.isRequired,
+  onListDelete: PropTypes.func.isRequired,
+  onListArchive: PropTypes.func.isRequired,
+  onAddCard: PropTypes.func.isRequired,
 }
 
 export default ListColumn
