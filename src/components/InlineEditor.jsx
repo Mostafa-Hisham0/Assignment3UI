@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 
 const InlineEditor = ({
   value,
@@ -78,6 +79,16 @@ const InlineEditor = ({
       aria-label="Edit text"
     />
   )
+}
+
+InlineEditor.propTypes = {
+  value: PropTypes.string.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  className: PropTypes.string,
+  multiline: PropTypes.bool,
+  autoFocus: PropTypes.bool,
 }
 
 export default InlineEditor

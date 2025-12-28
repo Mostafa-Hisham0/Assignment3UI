@@ -6,6 +6,7 @@ export const ACTION_TYPES = {
   UPDATE_LIST: 'UPDATE_LIST',
   DELETE_LIST: 'DELETE_LIST',
   ARCHIVE_LIST: 'ARCHIVE_LIST',
+  UNARCHIVE_LIST: 'UNARCHIVE_LIST',
   ADD_CARD: 'ADD_CARD',
   UPDATE_CARD: 'UPDATE_CARD',
   DELETE_CARD: 'DELETE_CARD',
@@ -15,16 +16,7 @@ export const ACTION_TYPES = {
   SYNC_FAILURE: 'SYNC_FAILURE',
   UNDO: 'UNDO',
   REDO: 'REDO',
-}
-
-const initialState = {
-  lists: [],
-  cards: [],
-  history: [],
-  historyIndex: -1,
-  syncQueue: [],
-  lastSyncTime: null,
-  conflicts: [],
+  CLEAR_ALL: 'CLEAR_ALL',
 }
 
 export const boardReducer = (state, action) => {
@@ -91,6 +83,18 @@ export const boardReducer = (state, action) => {
         ...state,
         lists: state.lists.map((list) =>
           list.id === listId ? { ...list, archived: true } : list
+        ),
+        history: [...state.history.slice(0, state.historyIndex + 1), state],
+        historyIndex: state.historyIndex + 1,
+      }
+    }
+
+    case ACTION_TYPES.UNARCHIVE_LIST: {
+      const { listId } = action.payload
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === listId ? { ...list, archived: false } : list
         ),
         history: [...state.history.slice(0, state.historyIndex + 1), state],
         historyIndex: state.historyIndex + 1,
@@ -229,7 +233,7 @@ export const boardReducer = (state, action) => {
     case ACTION_TYPES.SYNC_FAILURE: {
       return {
         ...state,
-        syncQueue: action.payload.queue || state.syncQueue,
+        syncQueue: action.payload?.queue || state.syncQueue,
       }
     }
 
@@ -250,6 +254,18 @@ export const boardReducer = (state, action) => {
         ...nextState,
         history: state.history,
         historyIndex: state.historyIndex + 1,
+      }
+    }
+
+    case ACTION_TYPES.CLEAR_ALL: {
+      return {
+        ...state,
+        lists: [],
+        cards: [],
+        history: [...state.history.slice(0, state.historyIndex + 1), state],
+        historyIndex: state.historyIndex + 1,
+        syncQueue: [],
+        conflicts: [],
       }
     }
 

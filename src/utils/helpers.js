@@ -44,14 +44,23 @@ export const deepClone = (obj) => {
 }
 
 export const mergeObjects = (base, local, server) => {
-  if (!base || !local || !server) {
-    return server || local || base
+  if (!base && !local && !server) {
+    return {}
+  }
+  if (!base) {
+    return { ...(local || {}), ...(server || {}) }
+  }
+  if (!local) {
+    return server || base || {}
+  }
+  if (!server) {
+    return { ...(base || {}), ...(local || {}) }
   }
 
   const merged = { ...server }
 
   for (const key in local) {
-    if (local.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(local, key)) {
       if (typeof local[key] === 'object' && local[key] !== null && !Array.isArray(local[key])) {
         merged[key] = mergeObjects(base[key], local[key], server[key] || {})
       } else if (Array.isArray(local[key])) {

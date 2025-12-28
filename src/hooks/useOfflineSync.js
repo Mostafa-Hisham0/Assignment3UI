@@ -16,10 +16,7 @@ export const useOfflineSync = () => {
 
   const saveToStorage = useCallback(async () => {
     try {
-      await Promise.all([
-        ...lists.map((list) => storage.saveList(list)),
-        ...cards.map((card) => storage.saveCard(card)),
-      ])
+      await storage.saveAllData(lists, cards)
     } catch (error) {
       console.error('Failed to save to storage:', error)
     }
@@ -116,14 +113,14 @@ export const useOfflineSync = () => {
       console.error('Sync failed:', error)
       dispatch({ type: ACTION_TYPES.SYNC_FAILURE })
     }
-  }, [lists, cards, dispatch, ACTION_TYPES, saveToStorage])
+  }, [lists, cards, dispatch, saveToStorage])
 
   const queueAction = useCallback(
     async (action) => {
       if (isOnlineRef.current) {
         try {
           await syncWithServer()
-        } catch (error) {
+        } catch {
           await storage.addToSyncQueue(action)
         }
       } else {
@@ -161,9 +158,8 @@ export const useOfflineSync = () => {
     }
   }, [syncWithServer])
 
-  useEffect(() => {
-    saveToStorage()
-  }, [lists, cards, saveToStorage])
+  // Note: Local persistence is now handled by BoardProvider
+  // This hook only handles server synchronization
 
   return {
     syncWithServer,
