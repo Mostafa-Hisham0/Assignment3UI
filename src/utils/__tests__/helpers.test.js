@@ -37,17 +37,23 @@ describe('helpers', () => {
   describe('getContrastColor', () => {
     it('should return black for light colors', () => {
       expect(getContrastColor('#FFFFFF')).toBe('#000000')
-      expect(getContrastColor('#FF0000')).toBe('#000000')
+      expect(getContrastColor('#FFFF00')).toBe('#000000') // Yellow is light
     })
 
     it('should return white for dark colors', () => {
       expect(getContrastColor('#000000')).toBe('#ffffff')
       expect(getContrastColor('#000080')).toBe('#ffffff')
+      expect(getContrastColor('#FF0000')).toBe('#ffffff') // Red is dark
     })
   })
 
   describe('debounce', () => {
-    jest.useFakeTimers()
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+    afterEach(() => {
+      jest.useRealTimers()
+    })
     it('should debounce function calls', () => {
       const func = jest.fn()
       const debounced = debounce(func, 100)
@@ -58,11 +64,15 @@ describe('helpers', () => {
       jest.advanceTimersByTime(100)
       expect(func).toHaveBeenCalledTimes(1)
     })
-    jest.useRealTimers()
   })
 
   describe('throttle', () => {
-    jest.useFakeTimers()
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+    afterEach(() => {
+      jest.useRealTimers()
+    })
     it('should throttle function calls', () => {
       const func = jest.fn()
       const throttled = throttle(func, 100)
@@ -74,7 +84,6 @@ describe('helpers', () => {
       throttled()
       expect(func).toHaveBeenCalledTimes(2)
     })
-    jest.useRealTimers()
   })
 
   describe('deepClone', () => {

@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { useUndoRedo } from '../useUndoRedo'
 import { BoardProvider } from '../../context/BoardProvider'
 

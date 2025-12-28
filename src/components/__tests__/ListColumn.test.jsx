@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import PropTypes from 'prop-types'
 import ListColumn from '../ListColumn'
 import { DndContext } from '@dnd-kit/core'
 
@@ -32,6 +33,9 @@ const Wrapper = ({ children }) => (
     {children}
   </DndContext>
 )
+Wrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+}
 
 describe('ListColumn', () => {
   beforeEach(() => {

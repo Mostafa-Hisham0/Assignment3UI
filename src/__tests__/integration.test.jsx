@@ -29,7 +29,7 @@ describe('Integration Tests', () => {
   })
 
   it('should persist list changes to storage', async () => {
-    const { rerender } = render(
+    render(
       <BoardProvider>
         <Board />
       </BoardProvider>

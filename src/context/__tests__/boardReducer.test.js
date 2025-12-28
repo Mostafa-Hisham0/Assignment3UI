@@ -1,5 +1,4 @@
 import { boardReducer, ACTION_TYPES } from '../boardReducer'
-import { v4 as uuidv4 } from 'uuid'
 
 // Mock uuid
 jest.mock('uuid', () => ({
