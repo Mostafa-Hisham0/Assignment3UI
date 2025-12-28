@@ -299,12 +299,6 @@ describe('useOfflineSync', () => {
       version: 3,
       lastModifiedAt: new Date().toISOString(),
     }
-    const _localList = {
-      id: 'list-1',
-      title: 'Local Title',
-      version: 2,
-      lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
-    }
     api.fetchLists.mockResolvedValue([serverList])
     api.fetchCards.mockResolvedValue([])
     storage.saveAllData.mockResolvedValue()
@@ -323,12 +317,6 @@ describe('useOfflineSync', () => {
       title: 'Server Card',
       version: 3,
       lastModifiedAt: new Date().toISOString(),
-    }
-    const _localCard = {
-      id: 'card-1',
-      title: 'Local Card',
-      version: 2,
-      lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
     }
     api.fetchLists.mockResolvedValue([])
     api.fetchCards.mockResolvedValue([serverCard])
@@ -446,12 +434,6 @@ describe('useOfflineSync', () => {
       version: 1,
       lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
     }
-    const _localList = {
-      id: 'list-1',
-      title: 'Local Title',
-      version: 2,
-      lastModifiedAt: new Date().toISOString(),
-    }
     api.fetchLists.mockResolvedValue([serverList])
     api.fetchCards.mockResolvedValue([])
     storage.saveAllData.mockResolvedValue()
@@ -469,12 +451,6 @@ describe('useOfflineSync', () => {
       title: 'Server Card',
       version: 1,
       lastModifiedAt: new Date(Date.now() - 10000).toISOString(),
-    }
-    const _localCard = {
-      id: 'card-1',
-      title: 'Local Card',
-      version: 2,
-      lastModifiedAt: new Date().toISOString(),
     }
     api.fetchLists.mockResolvedValue([])
     api.fetchCards.mockResolvedValue([serverCard])
@@ -665,12 +641,6 @@ describe('useOfflineSync', () => {
   })
 
   it('handles lists without server match', async () => {
-    const _localList = {
-      id: 'list-local-only',
-      title: 'Local Only List',
-      version: 1,
-      lastModifiedAt: new Date().toISOString(),
-    }
     api.fetchLists.mockResolvedValue([])
     api.fetchCards.mockResolvedValue([])
     storage.saveAllData.mockResolvedValue()
